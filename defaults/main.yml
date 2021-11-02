@@ -1,0 +1,22 @@
+---
+
+# main switches
+
+# default config => is overwritten by provided config
+default_django:
+  instances: {}
+
+  path_web: '/var/www/django'
+  path_venv: '/var/www/django_venv'
+  base_dir: 'base'  # directory used to store the default-settings (used to store 'settings.py'; normally it equals the project name)
+  path_additional: []  # paths to add to 'PYTHONPATH'
+
+  migration_pre_tasks: []
+  migration_post_tasks: []
+
+
+DJANGO_CONFIG: "{{ default_django | combine(django, recursive=true) }}"
+
+# instance-specific config
+default_instance_config:
+

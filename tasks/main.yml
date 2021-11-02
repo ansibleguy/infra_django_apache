@@ -1,0 +1,86 @@
+---
+
+- name: Apache | Django | Install packages
+  ansible.builtin.apt:
+    name: "{{ django_packages }}"
+    state: present
+  notify: 'reload_apache'
+
+- name: Apache | Django | Enabling apache-mod wsgi
+  community.general.apache2_module:
+    state: present
+    name: wsgi
+  notify: 'reload_apache'
+
+- name: Apache | Django | Create django directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: 'www-data'
+    group: 'www-data'
+    mode: 0755
+  with_items:
+    - "{{ django_root }}"
+    - "{{ django_root_venv }}"
+    - "{{ django_root_static }}"
+
+- name: Apache | Django | Configuring database connection / copying db update script
+  ansible.builtin.template:
+    src: "templates/var/www/{{ item }}.j2"
+    dest: "{{ django_root }}/{{ item }}"
+    owner: 'www-data'
+    group: 'www-data'
+    mode: 0400
+  when: django_db | length > 0
+  with_items:
+    - 'db.cnf'
+    - 'update_schema.sh'
+
+- name: Apache | Django | Installing python3 virtualenv-module
+  ansible.builtin.pip:
+    name: 'virtualenv'
+    executable: pip3
+    state: present
+  notify: 'reload_apache'
+
+- name: Apache | Django | Creating venv/Installing python3 base-modules
+  ansible.builtin.pip:
+    name: "{{ django_default_mods }}"
+    virtualenv: "{{ django_root_venv }}"
+    virtualenv_python: "{{ django_venv_python }}"
+    state: present
+  notify: 'reload_apache'
+  register: task_django_venv
+
+- name: Apache | Django | Install custom python3 modules
+  ansible.builtin.pip:
+    name: "{{ django_mods }}"
+    virtualenv: "{{ django_root_venv }}"
+    virtualenv_python: "{{ django_venv_python }}"
+    state: present
+  notify: 'reload_apache'
+  when: django_mods | length > 0
+
+- name: Apache | Django | Building database schema
+  ansible.builtin.shell: "source {{ django_root_venv }}/bin/activate &&
+  {{ django_root_venv }}/bin/python3 manage.py makemigrations"
+  args:
+    executable: '/bin/bash'
+    chdir: "{{ django_root }}"
+  environment:
+    PYTHONPATH: "{{ django_root }}:{{ django_root_venv }}/lib/python{{ django_venv_python }}/site-packages"
+  when: task_django_venv.changed
+
+- name: Apache | Django | Importing database schema
+  ansible.builtin.shell: "source {{ django_root_venv }}/bin/activate &&
+  {{ django_root_venv }}/bin/python3 manage.py migrate"
+  args:
+    executable: '/bin/bash'
+    chdir: "{{ django_root }}"
+  environment:
+    PYTHONPATH: "{{ django_root }}:{{ django_root_venv }}/lib/python{{ django_venv_python }}/site-packages"
+    DJANGO_SETTINGS_MODULE: 'base.settings'
+  when: task_django_venv.changed
+
+- name: Apache | Django | Configuring apache site
+  ansible.builtin.include_tasks: site.yml  # since we'll need the django vars

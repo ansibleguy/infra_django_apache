@@ -1,0 +1,59 @@
+<VirtualHost *:80>
+    ServerName {{ apache_domain }}
+{% if apache_alias|length > 0 %}
+    ServerAlias {% for name in apache_alias %} {{ name }} {% endfor %}
+{% endif %}
+    ServerAdmin {{ apache_admin }}
+    Redirect permanent / https://{{ apache_domain }}
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ apache_domain }}
+    ServerAdmin {{ apache_admin }}
+{% if apache_alias|length > 0 %}
+    ServerAlias {% for name in apache_alias %} {{ name }} {% endfor %}
+{% endif %}
+    DocumentRoot {{ apache_root }}
+    Alias {{ apache_django_url_static }} {{ apache_django_root_static }}
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so
+
+    <Directory {{ apache_django_root}}>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    WSGIDaemonProcess testing python-path={{ apache_root }}:{{ apache_django_root_venv }}/venv/lib/{{ apache_django_venv_python_version }}/site-packages:{{ apache_django_root_venv }}/venv/lib/{{ apache_django_venv_python_version }}
+    WSGIProcessGroup {{ apache_django_wsgi_process_group }}
+    WSGIScriptAlias / {{ apache_django_root}}/wsgi.py process-group={{ apache_django_wsgi_process_group }}
+
+    <IfModule mod_ssl.c>
+        SSLEngine on
+{% if apache_ssl_mode == 'letsencrypt' %}
+        SSLCertificateKeyFile /etc/letsencrypt/live/{{ apache_domain }}/privkey.pem
+        SSLCertificateFile /etc/letsencrypt/live/{{ apache_domain }}/cert.pem
+        SSLCertificateChainFile /etc/letsencrypt/live/{{ apache_domain }}/fullchain.pem
+{% else %}
+        SSLCertificateKeyFile /etc/ssl/private/{{ apache_domain }}.key.pem
+        SSLCertificateFile /etc/ssl/certs/{{ apache_domain }}.cert.pem
+        SSLCertificateChainFile /etc/ssl/certs/{{ apache_domain }}.chain.pem
+{% endif %}
+        SetEnvIf User-Agent ".*MSIE.*" \
+        nokeepalive ssl-unclean-shutdown \
+        downgrade-1.0 force-response-1.0
+    </IfModule>
+
+    <Directory "{{ apache_django_root }}" >
+        AllowOverride All
+    </Directory>
+
+</VirtualHost>
+
+ServerName {{ apache_domain }}

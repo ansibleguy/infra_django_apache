@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+[client]
+host = {{ django_db.host | default('localhost') }}
+database = {{ django_db.db }}
+user = {{ django_db.user }}
+password = {{ django_db.pwd }}
+default-character-set = {{ django_db.charset | default('utf8mb4') }}
+
+{% if django_db.socket is defined %}
+socket = {{ django_db.socket }}
+{% endif %}

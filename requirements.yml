@@ -1,0 +1,11 @@
+# external roles and collections to download
+# install: ansible-galaxy install -r requirements.yml
+
+roles:
+  - src: 'https://github.com/ansibleguy/infra_apache.git'
+    version: 'stable'
+    name: 'ansibleguy.infra_apache'
+
+collections:
+  - name: 'community.general'
+    source: 'https://galaxy.ansible.com'

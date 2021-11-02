@@ -1,0 +1,29 @@
+#!/bin/bash
+# django db schema update script
+
+PATH_WEB='{{ DJANGO_CONFIG.path_web }}'
+PATH_VENV='{{ DJANGO_CONFIG.path_venv }}'
+PATH_OTHER='{% for path in DJANGO_CONFIG.path_additional %}:{{ path }}{% endfor %}'
+
+PYVER=`ls ${PATH_VENV} | grep python | cut -d ' ' -f1`
+
+export DJANGO_SETTINGS_MODULE={{ DJANGO_CONFIG.base_dir }}.settings
+export PYTHONPATH=${PATH_WEB}:${PATH_VENV}/lib/${PYVER}/site-packages${PATH_OTHER}
+
+{% if DJANGO_CONFIG.migration_pre_tasks | length > 0 %}
+# pre migration tasks
+{%   for task in DJANGO_CONFIG.migration_pre_tasks %}
+{{ task }}
+{%   endfor %}
+{% endif %}
+
+cd ${PATH_WEB}
+source ${PATH_VENV}/bin/activate
+${PATH_VENV}/bin/python3 manage.py makemigrations && ${PATH_VENV}/bin/python3 manage.py migrate && sudo systemctl restart apache2.service
+
+{% if DJANGO_CONFIG.migration_post_tasks | length > 0 %}
+# post migration tasks
+{%   for task in DJANGO_CONFIG.migration_post_tasks %}
+{{ task }}
+{%   endfor %}
+{% endif %}
