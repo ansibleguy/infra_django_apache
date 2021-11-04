@@ -1,0 +1,106 @@
+---
+
+- name: Django | Debian | Installing base packages
+  ansible.builtin.apt:
+    name: "{{ DJANGO_CONFIG.packages.base }}"
+    state: present
+    update_cache: true
+  tags: [base, django]
+
+- name: Django | Debian | Installing mysql/mariadb packages
+  ansible.builtin.package:
+    name: "{{ DJANGO_CONFIG.packages.mysql }}"
+    state: present
+  when: "'mysql' in DJANGO_CONFIG.databases or 'mariadb' in DJANGO_CONFIG.databases"
+  tags: [base, db, django]
+
+- name: Django | Debian | Building apache sites
+  ansible.builtin.set_fact:
+    apache_sites: "{{ apache_sites | combine(name|get_dict(site)) }}"
+  vars:
+    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    name: "{{ site_item.key | safe_key }}"
+  loop_control:
+    loop_var: site_item
+  with_dict: "{{ DJANGO_CONFIG.sites }}"
+  no_log: true
+  tags: [config, sites, certs]
+
+# is an additional site-loop since certificates can be pre-/absent
+- name: Django | Debian | Configuring Apache sites
+  ansible.builtin.include_role:
+    name: ansibleguy.infra_apache
+  vars:
+    apache:
+      security: "{{ DJANGO_CONFIG.security }}"
+      modules:
+        present: ['wsgi']
+      sites: "{{ apache_sites }}"
+  no_log: true
+  tags: [config, sites, certs]
+
+- name: Django | Debian | Building MariaDB instances
+  ansible.builtin.set_fact:
+    mariadb_instances: "{{ mariadb_instances | combine(site | prepare_mariadb(name)) }}"
+  when:
+    - site.database.manage
+    - "site.database.type in ['mysql', 'mariadb']"
+    - "site.database.host in ['localhost', '127.0.0.1', none, '', ' ']"
+  vars:
+    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    name: "{{ site_item.key | safe_key }}"
+  loop_control:
+    loop_var: site_item
+  with_dict: "{{ DJANGO_CONFIG.sites }}"
+  no_log: true
+  tags: [db, sites]
+
+# is an additional site-loop since certificates can be pre-/absent
+- name: Django | Debian | Configuring MariaDB instances
+  ansible.builtin.import_role:
+    name: ansibleguy.infra_mariadb
+  vars:
+    mariadb:
+      instances: "{{ mariadb_instances }}"
+  when:
+    - mariadb_instances is defined
+    - mariadb_instances | length > 0
+  tags: [db, sites]
+
+- name: Django | Debian | Removing site
+  ansible.builtin.include_tasks: rm_site.yml
+  when: site.state != 'present'
+  vars:
+    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    path: "{{ site.serve.path }}"
+    name: "{{ site_item.key | safe_key }}"
+  loop_control:
+    loop_var: site_item
+  with_dict: "{{ DJANGO_CONFIG.sites }}"
+  no_log: true
+  tags: [config, sites, db, django]
+
+- name: Django | Debian | Reloading apache
+  ansible.builtin.systemd:
+    name: 'apache2.service'
+    state: reloaded
+  tags: [base, config, sites, db, django]
+
+- name: Django | Debian | Adding site
+  ansible.builtin.include_tasks: add_site.yml
+  when: site.state == 'present'
+  vars:
+    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    path: "{{ site.serve.path }}"
+    name: "{{ site_item.key | safe_key }}"
+  loop_control:
+    loop_var: site_item
+  with_dict: "{{ DJANGO_CONFIG.sites }}"
+  no_log: true
+  tags: [config, sites, db, django]
+
+- name: Django | Debian | Reloading apache
+  ansible.builtin.systemd:
+    name: 'apache2.service'
+    state: reloaded
+  tags: [base, config, sites, db, django]

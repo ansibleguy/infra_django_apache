@@ -1,22 +1,124 @@
 ---
 
-# main switches
-
 # default config => is overwritten by provided config
 default_django:
-  instances: {}
+  # will overwrite the apache config as seen in the main defaults file of ansibleguy.infra_apache (see: https://github.com/ansibleguy/infra_apache)
+  sites: {}
 
-  path_web: '/var/www/django'
-  path_venv: '/var/www/django_venv'
-  base_dir: 'base'  # directory used to store the default-settings (used to store 'settings.py'; normally it equals the project name)
-  path_additional: []  # paths to add to 'PYTHONPATH'
+  user: 'www-data'
+  group: 'www-data'
+
+  databases: ['mysql']  # types of databases the role should prepare to support
+
+  python_modules:
+    base: ['django', 'pyinotify']
+    mysql: ['django_mysql', 'mysqlclient']
+    pgsql: ['psycopg2']
+
+  packages:
+    base: ['python3', 'python3-virtualenv', 'python3-pip', 'libapache2-mod-wsgi-py3', 'rsync']
+    mysql: ['default-libmysqlclient-dev']
+
+  settings: {}
+  config: {}
+  headers: {}
+  ssl: {}  # see: https://github.com/ansibleguy/infra_certs
+  modules: {}  # apache modules
+
+  security:
+    restricted_methods: ['GET', 'POST', 'HEAD']
+
+  letsencrypt:
+    email:
+
+DJANGO_CONFIG: "{{ default_django | combine(django, recursive=true) }}"
+
+# site-specific config
+default_site_config:
+  mode: 'serve'  # DO NOT CHANGE!
+  app_include: true  # DO NOT CHANGE!
+  state: 'present'
+  admin: 'django@template.ansibleguy.net'
+  port_plain: 80
+  port_ssl: 443
+  aliases: []
+  ip:
+
+  serve:  # used to pass to ansibleguy.infra_apache
+    path: '/var/www/django'
+
+  static_path: '/var/www/django_static'
+  static_url: 'public'  # sub-url that is used for static files (as configured in django's settings.py)
+  venv: '/var/lib/django'
+  project: 'base'  # directory used to store the default-settings (used to store 'settings.py'; normally it equals the project name)
+
+  database:
+    type: 'mariadb'
+    manage: true  # if the database should be managed by the ansibleguy.infra_mariadb role; only if type in ['mysql', 'mariadb']
+    host: 'localhost'
+    db: 'django'
+    user: 'django'
+    pwd: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=20') }}"
+    charset: 'utf8mb4'
+    socket:
+    config: 'db.cnf'  # file will be placed in the django root path
+    config_mode: '0400'
+    backup: false  # dis-/enable backup service
+
+  sync_code:
+    enabled: false
+    src:  # local source of the code to sync
+    dst:  # if empty => it will be synced to 'serve.path'
+    static_src:  # local source of static files
+    static_dst:  # if empty => it will be synced to 'static_path'
+    excludes: ['*.cnf', 'migrations/*', '__pycache__/']
+    options: []
+
+  python_version: '3.9'  # python version must be pre-installed on the target system
+  python_modules:
+    present: []
+    absent: []
+  env_pythonpath: []  # paths to add to 'PYTHONPATH'
+
+  config: {}  # site-specific setting-value pairs
+  config_additions: []  # lines that will 1-to-1 be appended to the site-config
+  headers: {}
+  security: {}
+
+  ssl:  # see: https://github.com/ansibleguy/infra_certs
+    mode: 'selfsigned'  # existing/selfsigned/ca/letsencrypt
+    # existing:
+    #   We expect the certs to be placed in the role's 'files' directory named like the site
+    #   Example: files/certs/ansibleguy.key and files/certs/ansibleguy.crt
+    # letsencrypt:
+    #   Host needs to have a valid public dns record pointed at it
+    #   Needs to be publicly reachable over port 80/tcp
+    cert:
+      name:
+      cn: 'Django Certificate'
+      org: 'AnsibleGuy'
+      ou:
+      country:
+      state:
+      locality:
+      email:
+      crl_distribution: []
+    ca:
+      file:  # can be used if you want to use an existing ca
+      cn:
+      org:
+      ou:
+      country:
+      state:
+      locality:
+      email:
+      pwd:  # it's highly recommended setting a passphrase!
 
   migration_pre_tasks: []
   migration_post_tasks: []
 
+  letsencrypt:
+    email:
 
-DJANGO_CONFIG: "{{ default_django | combine(django, recursive=true) }}"
-
-# instance-specific config
-default_instance_config:
-
+apache_sites: {}
+mariadb_instances: {}

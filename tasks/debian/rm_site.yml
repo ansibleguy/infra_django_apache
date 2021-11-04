@@ -1,0 +1,11 @@
+---
+
+- name: "Django | Debian | Site '{{ name }}' | Removing directories and files"
+  ansible.builtin.file:
+    state: absent
+    force: true
+  with_items:
+    - "{{ path }}"
+    - "{{ site.venv }}"
+    - "{{ site.static_path }}"
+  tags: [sites, django]

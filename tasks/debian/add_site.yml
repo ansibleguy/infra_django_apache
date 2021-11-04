@@ -1,0 +1,180 @@
+---
+
+- name: "Django | Debian | Site '{{ name }}' | Configuring site"
+  ansible.builtin.template:
+    src: 'templates/etc/apache2/sites-available/django.conf.j2'
+    dest: "/etc/apache2/sites-available/site_{{ name }}_app.conf"
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Create django directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ DJANGO_CONFIG.user }}"
+    group: "{{ DJANGO_CONFIG.group }}"
+    mode: 0755
+  with_items:
+    - "{{ path }}"
+    - "{{ site.venv }}"
+    - "{{ site.static_path }}"
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Getting database socket"
+  ansible.builtin.set_fact:
+    mysql_socket: "/run/mysqld/mysqld_{{ site.database.socket | default(name, true) }}.sock"
+  when: "site.database.type in ['mysql', 'mariadb']"
+  tags: [sites, config, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Checking if database client config exists"
+  ansible.builtin.stat:
+    path: "{{ path }}/{{ site.database.config }}"
+  register: django_db_config_raw
+  tags: [sites, config, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Configuring database connection for mysql/mariadb"
+  ansible.builtin.template:
+    src: 'templates/var/www/django/mysql_db.cnf.j2'
+    dest: "{{ path }}/{{ site.database.config }}"
+    owner: "{{ DJANGO_CONFIG.user }}"
+    group: "{{ DJANGO_CONFIG.group }}"
+    mode: "{{ site.database.config_mode }}"
+  when:
+    - not django_db_config_raw.stat.exists
+    - "site.database.type in ['mysql', 'mariadb']"
+  tags: [sites, config, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Configuring database connection for pgsql"
+  ansible.builtin.template:
+    src: 'templates/var/www/django/pgsql_db.cnf.j2'
+    dest: "{{ path }}/{{ site.database.config }}"
+    owner: "{{ DJANGO_CONFIG.user }}"
+    group: "{{ DJANGO_CONFIG.group }}"
+    mode: "{{ site.database.config_mode }}"
+  when:
+    - not django_db_config_raw.stat.exists
+    - "site.database.type in ['pgsql', 'postgres']"
+  tags: [sites, config, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Copying db update script"
+  ansible.builtin.template:
+    src: "templates/var/lib/django/update_schema.sh.j2"
+    dest: "{{ site.venv }}/update_schema.sh"
+    owner: 'root'
+    group: 'root'
+    mode: 0755
+  tags: [sites]
+
+- name: "Django | Debian | Site '{{ name }}' | Installing python3 base-modules"
+  ansible.builtin.pip:
+    name: "{{ DJANGO_CONFIG.python_modules.base }}"
+    virtualenv: "{{ site.venv }}"
+    virtualenv_python: "{{ site.python_version }}"
+    state: present
+  register: django_venv_create_raw
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Installing mysql/mariadb python modules"
+  ansible.builtin.pip:
+    name: "{{ DJANGO_CONFIG.python_modules.mysql }}"
+    virtualenv: "{{ site.venv }}"
+    virtualenv_python: "{{ site.python_version }}"
+    state: present
+  when: "site.database.type in ['mysql', 'mariadb']"
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Installing postgres python modules"
+  ansible.builtin.pip:
+    name: "{{ DJANGO_CONFIG.python_modules.pgsql }}"
+    virtualenv: "{{ site.venv }}"
+    virtualenv_python: "{{ site.python_version }}"
+    state: present
+  when: "site.database.type in ['pgsql', 'postgres']"
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Installing custom python modules"
+  ansible.builtin.pip:
+    name: "{{ module }}"
+    virtualenv: "{{ site.venv }}"
+    virtualenv_python: "{{ site.python_version }}"
+    state: present
+  when:
+    - module not in site.python_modules.absent
+    - site.python_modules.present | length > 0
+  loop_control:
+    loop_var: module
+  loop: "{{ site.python_modules.present }}"
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Removing python modules"
+  ansible.builtin.pip:
+    name: "{{ site.python_modules.absent }}"
+    virtualenv: "{{ site.venv }}"
+    virtualenv_python: "{{ site.python_version }}"
+    state: absent
+  when: site.python_modules.absent | length > 0
+  tags: [sites, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Syncing code"
+  ansible.posix.synchronize:
+    src: "{{ site.sync_code.src }}"
+    dest: "{{ site.sync_code.dst | default(path) }}/"
+    recursive: yes
+    delete: yes
+    rsync_path: 'sudo rsync'
+    rsync_opts: "[{% for exclude in site.sync_code.excludes %}'--exclude={{ exclude }}', {% endfor %}] + site.sync_code.options"
+  when:
+    - site.sync_code.enabled
+    - site.sync_code.src | default(none, true) is not none
+  tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Syncing static files"
+  ansible.posix.synchronize:
+    src: "{{ site.sync_code.static_src }}"
+    dest: "{{ site.sync_code.static_dst | default(site.static_path) }}/"
+    recursive: yes
+    delete: yes
+    rsync_path: 'sudo rsync'
+    rsync_opts: "[{% for exclude in site.sync_code.excludes %}'--exclude={{ exclude }}', {% endfor %}] + site.sync_code.options"
+  when:
+    - site.sync_code.enabled
+    - site.sync_code.static_src | default(none, true) is not none
+  tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Updating privileges for synced files"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ DJANGO_CONFIG.user }}"
+    group: "{{ DJANGO_CONFIG.group }}"
+    recurse: true
+  loop:
+    - "{{ site.sync_code.dst | default(path) }}"
+    - "{{ site.sync_code.static_dst | default(site.static_path) }}"
+  when: site.sync_code.enabled
+  tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Building database schema"
+  ansible.builtin.shell: "source {{ site.venv }}/bin/activate &&
+  {{ site.venv }}/bin/python3 manage.py makemigrations"
+  args:
+    executable: '/bin/bash'
+    chdir: "{{ path }}"
+  environment:
+    PYTHONPATH: "{{ path }}:{{ site.venv }}/lib/python{{ site.python_version }}/site-packages"
+    DJANGO_SETTINGS_MODULE: "{{ site.project }}.settings"
+  when: django_venv_create_raw.changed
+  tags: [sites, sync, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Migrating database schema"
+  ansible.builtin.shell: "source {{ site.venv }}/bin/activate &&
+  {{ site.venv }}/bin/python3 manage.py migrate"
+  args:
+    executable: '/bin/bash'
+    chdir: "{{ path }}"
+  environment:
+    PYTHONPATH: "{{ path }}:{{ site.venv }}/lib/python{{ site.python_version }}/site-packages"
+    DJANGO_SETTINGS_MODULE: "{{ site.project }}.settings"
+  when: django_venv_create_raw.changed
+  tags: [sites, sync, db, django]
