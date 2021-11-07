@@ -1,21 +1,15 @@
 # {{ ansible_managed }}
 # ansibleguy.infra_django_apache
 
-DocumentRoot {{ path }}
-Alias {{ site.static_url }} {{ site.static_path }}
+Alias /{{ site.static_url }} {{ path_static }}
 LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so
 
-<Directory {{ path }}/{{ site.project }} >
+<Directory {{ path }}/{{ project }} >
     <Files wsgi.py>
         Require all granted
     </Files>
 </Directory>
 
 WSGIProcessGroup {{ name }}
-WSGIScriptAlias / {{ path }}/{{ site.project }}/wsgi.py process-group={{ name }}
-WSGIDaemonProcess {{ name }} python-home={{ site.venv }} python-path={{ path }}:{{ site.venv }}/venv/lib/{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}
-
-
-<Directory {{ path }} >
-    AllowOverride All
-</Directory>
+WSGIScriptAlias / {{ path }}/{{ project }}/wsgi.py process-group={{ name }}
+WSGIDaemonProcess {{ name }} python-home={{ site.path_venv }} python-path={{ path }}:{{ site.path_venv }}/venv/lib/{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}

@@ -33,8 +33,7 @@
   vars:
     apache:
       security: "{{ DJANGO_CONFIG.security }}"
-      modules:
-        present: ['wsgi']
+      modules: "{{ DJANGO_CONFIG.apache_modules }}"
       sites: "{{ apache_sites }}"
   no_log: true
   tags: [config, sites, certs]
@@ -72,7 +71,7 @@
   when: site.state != 'present'
   vars:
     site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
-    path: "{{ site.serve.path }}"
+    path: "{{ site.path_code }}"
     name: "{{ site_item.key | safe_key }}"
   loop_control:
     loop_var: site_item
@@ -91,8 +90,10 @@
   when: site.state == 'present'
   vars:
     site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
-    path: "{{ site.serve.path }}"
+    path: "{{ site.path_code }}"
+    path_static: "{{ site.serve.path }}"
     name: "{{ site_item.key | safe_key }}"
+    project: "{{ site.project | safe_key }}"
   loop_control:
     loop_var: site_item
   with_dict: "{{ DJANGO_CONFIG.sites }}"

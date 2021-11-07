@@ -19,6 +19,10 @@ default_django:
     base: ['python3', 'python3-virtualenv', 'python3-pip', 'libapache2-mod-wsgi-py3', 'rsync']
     mysql: ['default-libmysqlclient-dev']
 
+  apache_modules:
+    present: ['wsgi', 'ssl', 'headers', 'rewrite']
+    absent: ['autoindex']
+
   settings: {}
   config: {}
   headers: {}
@@ -41,15 +45,16 @@ default_site_config:
   admin: 'django@template.ansibleguy.net'
   port_plain: 80
   port_ssl: 443
+  domain:
   aliases: []
   ip:
 
   serve:  # used to pass to ansibleguy.infra_apache
-    path: '/var/www/django'
+    path: '/var/www/django'  # path used for static files
 
-  static_path: '/var/www/django_static'
   static_url: 'public'  # sub-url that is used for static files (as configured in django's settings.py)
-  venv: '/var/lib/django'
+  path_venv: '/var/lib/django_venv'  # path to the python virtual environment
+  path_code: '/var/lib/django'  # where the code will be placed
   project: 'base'  # directory used to store the default-settings (used to store 'settings.py'; normally it equals the project name)
 
   database:
@@ -64,13 +69,14 @@ default_site_config:
     config: 'db.cnf'  # file will be placed in the django root path
     config_mode: '0400'
     backup: false  # dis-/enable backup service
+    update_pwd: 'on_create'  # can be set to 'always' to generate a new random mysql-password
 
   sync_code:
     enabled: false
     src:  # local source of the code to sync
-    dst:  # if empty => it will be synced to 'serve.path'
+    dst:  # if empty => it will be synced to 'path_code'
     static_src:  # local source of static files
-    static_dst:  # if empty => it will be synced to 'static_path'
+    static_dst:  # if empty => it will be synced to 'serve.path'
     excludes: ['*.cnf', 'migrations/*', '__pycache__/']
     options: []
 
@@ -122,3 +128,4 @@ default_site_config:
 
 apache_sites: {}
 mariadb_instances: {}
+force_removal: false

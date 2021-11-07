@@ -29,7 +29,7 @@ class FilterModule(object):
                     site['database']['user']: {
                         'priv': f"{site['database']['db']}.*:ALL",
                         'pwd': site['database']['pwd'],
-                        'update_pwd:': 'on_create',
+                        'update_pwd': site['database']['update_pwd'],
                     }
                 },
             }

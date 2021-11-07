@@ -5,7 +5,7 @@
 # django db schema update script
 
 PATH_WEB='{{ path }}'
-PATH_VENV='{{ site.venv }}'
+PATH_VENV='{{ site.path_venv }}'
 PATH_OTHER='{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}'
 
 PYVER=`ls ${PATH_VENV} | grep python | cut -d ' ' -f1`
