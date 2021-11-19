@@ -77,8 +77,7 @@ default_site_config:
     dst:  # if empty => it will be synced to 'path_code'
     static_src:  # local source of static files
     static_dst:  # if empty => it will be synced to 'serve.path'
-    excludes: ['*.cnf', 'migrations/*', '__pycache__/']
-    options: []
+    options: ['--exclude=*.cnf', '--exclude=migrations/*', '--exclude=__pycache__/']
 
   python_version: '3.9'  # python version must be pre-installed on the target system
   python_modules:

@@ -5,23 +5,18 @@
 {% if site.database.host is defined and site.database.host is not none %}
 host = {{ site.database.host }}
 {% endif %}
-
 {% if site.database.db is defined and site.database.db is not none %}
 database = {{ site.database.db }}
 {% endif %}
-
 {% if site.database.pwd is defined and site.database.pwd is not none %}
 password = {{ site.database.pwd }}
 {% endif %}
-
 {% if site.database.user is defined and site.database.user is not none %}
 user = {{ site.database.user }}
 {% endif %}
-
 {% if site.database.charset is defined and site.database.charset is not none %}
 default-character-set = {{ site.database.charset }}
 {% endif %}
-
 {% if mysql_socket is defined and mysql_socket is not none %}
 socket = {{ mysql_socket }}
 {% endif %}

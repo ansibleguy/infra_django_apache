@@ -176,6 +176,23 @@
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]
 
+- name: "Django | Debian | Site '{{ name }}' | Getting current user"
+  ansible.builtin.command: 'whoami'
+  become: false
+  changed_when: false
+  register: run_user_raw
+  tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Adding sync privileges"
+  ansible.builtin.template:
+    src: 'templates/etc/sudoers.d/sync.j2'
+    dest: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
+    validate: '/usr/sbin/visudo -cf %s'
+    mode: 0640
+    owner: 'root'
+    group: 'root'
+  tags: [sites, sync, django]
+
 - name: "Django | Debian | Site '{{ name }}' | Syncing code"
   ansible.posix.synchronize:
     src: "{{ site.sync_code.src }}"
@@ -183,7 +200,7 @@
     recursive: yes
     delete: yes
     rsync_path: 'sudo rsync'
-    rsync_opts: "[{% for exclude in site.sync_code.excludes %}'--exclude={{ exclude }}', {% endfor %}] + site.sync_code.options"
+    rsync_opts: "{{ site.sync_code.options }}"
   when:
     - site.sync_code.enabled
     - site.sync_code.src | default(none, true) is not none
@@ -196,7 +213,7 @@
     recursive: yes
     delete: yes
     rsync_path: 'sudo rsync'
-    rsync_opts: "[{% for exclude in site.sync_code.excludes %}'--exclude={{ exclude }}', {% endfor %}] + site.sync_code.options"
+    rsync_opts: "{{ site.sync_code.options }}"
   when:
     - site.sync_code.enabled
     - site.sync_code.static_src | default(none, true) is not none
