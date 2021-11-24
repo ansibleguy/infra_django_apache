@@ -25,6 +25,7 @@ class FilterModule(object):
                 'state': site['state'],
                 'dbs': {site['database']['db']: 'present'},
                 'backup': {'enabled': site['database']['backup']},
+                'settings': site['database']['settings'],
                 'users': {
                     site['database']['user']: {
                         'priv': f"{site['database']['db']}.*:ALL",

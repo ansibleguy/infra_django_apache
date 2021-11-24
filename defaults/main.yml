@@ -70,6 +70,8 @@ default_site_config:
     config_mode: '0400'
     backup: false  # dis-/enable backup service
     update_pwd: 'on_create'  # can be set to 'always' to generate a new random mysql-password
+    settings:
+      wait_timeout: 3600  # for django's persistent sql connection
 
   sync_code:
     enabled: false

@@ -76,6 +76,7 @@ DATABASES = {
     'default': {
 {% if site.database.type in ['mysql', 'mariadb'] %}
         'ENGINE': 'django.db.backends.mysql',
+        'CONN_MAX_AGE': 3300,  # must be less than mysql wait_timeout !!
         'OPTIONS': {
             'read_default_file': os_path.join(BASE_DIR, DB_CONFIG),
         },
