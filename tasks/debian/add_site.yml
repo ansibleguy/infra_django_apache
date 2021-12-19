@@ -233,6 +233,6 @@
     path: "{{ site.sync_code.static_dst | default(path_static, true) }}"
     owner: "{{ DJANGO_CONFIG.user }}"
     group: "{{ DJANGO_CONFIG.group }}"
-    mode: 0555
+    mode: 0755
     recurse: true
   tags: [sites, sync, django]

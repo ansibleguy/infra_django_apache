@@ -1,5 +1,5 @@
 # Django Role
-Ansible role to install multiple Django sites on the target server.
+Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
 
 **Tested:**
 * Debian 11

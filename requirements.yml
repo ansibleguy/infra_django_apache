@@ -8,6 +8,12 @@ collections:
   - name: 'ansible.posix'
     source: 'https://galaxy.ansible.com'
 
+  - name: 'community.mysql'
+    source: 'https://galaxy.ansible.com'
+
+  - name: 'community.crypto'
+    source: 'https://galaxy.ansible.com'
+
 roles:
   - src: 'https://github.com/ansibleguy/infra_apache.git'
     version: 'stable'
