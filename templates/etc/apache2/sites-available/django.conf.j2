@@ -12,4 +12,4 @@ LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so
 
 WSGIProcessGroup {{ name }}
 WSGIScriptAlias / {{ path }}/{{ project }}/wsgi.py process-group={{ name }}
-WSGIDaemonProcess {{ name }} python-home={{ site.path_venv }} python-path={{ path }}:{{ site.path_venv }}/venv/lib/{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}
+WSGIDaemonProcess {{ name }} python-home={{ site.path_venv }} python-path={{ path }}:{{ site.path_venv }}/venv/lib/{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}

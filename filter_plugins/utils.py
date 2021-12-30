@@ -8,6 +8,7 @@ class FilterModule(object):
             "safe_key": self.safe_key,
             "get_dict": self.get_dict,
             "prepare_mariadb": self.prepare_mariadb,
+            "pyver": self.pyver,
         }
 
     @staticmethod
@@ -17,6 +18,13 @@ class FilterModule(object):
     @staticmethod
     def get_dict(key, value) -> dict:
         return {key: value}
+
+    @staticmethod
+    def pyver(version: str) -> str:
+        if version.find('python') != -1:
+            return version
+
+        return f"python{version}"
 
     @staticmethod
     def prepare_mariadb(site: dict, name: str) -> dict:

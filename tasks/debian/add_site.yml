@@ -71,7 +71,8 @@
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.base }}"
     virtualenv: "{{ site.path_venv }}"
-    virtualenv_python: "{{ site.python_version }}"
+    virtualenv_python: "{{ pyver }}"
+    virtualenv_command: '/usr/bin/virtualenv'
     state: present
   register: django_venv_create_raw
   tags: [sites, django]
@@ -80,7 +81,8 @@
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.mysql }}"
     virtualenv: "{{ site.path_venv }}"
-    virtualenv_python: "{{ site.python_version }}"
+    virtualenv_python: "{{ pyver }}"
+    virtualenv_command: '/usr/bin/virtualenv'
     state: present
   when: "site.database.type in ['mysql', 'mariadb']"
   tags: [sites, django]
@@ -89,7 +91,8 @@
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.pgsql }}"
     virtualenv: "{{ site.path_venv }}"
-    virtualenv_python: "{{ site.python_version }}"
+    virtualenv_python: "{{ pyver }}"
+    virtualenv_command: '/usr/bin/virtualenv'
     state: present
   when: "site.database.type in ['pgsql', 'postgres']"
   tags: [sites, django]
@@ -98,7 +101,8 @@
   ansible.builtin.pip:
     name: "{{ module }}"
     virtualenv: "{{ site.path_venv }}"
-    virtualenv_python: "{{ site.python_version }}"
+    virtualenv_python: "{{ pyver }}"
+    virtualenv_command: '/usr/bin/virtualenv'
     state: present
   when:
     - module not in site.python_modules.absent
@@ -112,7 +116,8 @@
   ansible.builtin.pip:
     name: "{{ site.python_modules.absent }}"
     virtualenv: "{{ site.path_venv }}"
-    virtualenv_python: "{{ site.python_version }}"
+    virtualenv_python: "{{ pyver }}"
+    virtualenv_command: '/usr/bin/virtualenv'
     state: absent
   when: site.python_modules.absent | length > 0
   tags: [sites, django]
@@ -125,9 +130,15 @@
     chdir: "{{ path }}"
     creates: "{{ path }}/{{ project }}"
   environment:
-    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
+    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
   when: not site.sync_code.enabled
+  tags: [sites, db, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Checking if settings file exists"
+  ansible.builtin.stat:
+    path: "{{ path }}/{{ project }}/settings.py"
+  register: django_settings_raw
   tags: [sites, db, django]
 
 - name: "Django | Debian | Site '{{ name }}' | Deploying initial settings"
@@ -137,7 +148,9 @@
     owner: "{{ DJANGO_CONFIG.user }}"
     group: "{{ DJANGO_CONFIG.group }}"
     mode: 0550
-  when: django_venv_create_raw.changed
+  when:
+    - django_venv_create_raw.changed
+    - not django_settings_raw.stat.exists
   tags: [sites, db, django]
 
 - name: "Django | Debian | Site '{{ name }}' | Building database schema"
@@ -147,7 +160,7 @@
     executable: '/bin/bash'
     chdir: "{{ path }}"
   environment:
-    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
+    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]
@@ -159,7 +172,7 @@
     executable: '/bin/bash'
     chdir: "{{ path }}"
   environment:
-    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
+    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]
@@ -171,7 +184,7 @@
     executable: '/bin/bash'
     chdir: "{{ path }}"
   environment:
-    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ site.python_version }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
+    PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]

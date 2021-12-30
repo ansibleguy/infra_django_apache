@@ -94,6 +94,7 @@
     path_static: "{{ site.serve.path }}"
     name: "{{ site_item.key | safe_key }}"
     project: "{{ site.project | safe_key }}"
+    pyver: "{{ site.python_version | pyver }}"
   loop_control:
     loop_var: site_item
   with_dict: "{{ DJANGO_CONFIG.sites }}"
