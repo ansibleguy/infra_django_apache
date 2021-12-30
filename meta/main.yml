@@ -7,7 +7,7 @@ galaxy_info:
   repository: 'https://github.com/ansibleguy/infra_django_apache'
   issue_tracker_url: 'https://github.com/ansibleguy/infra_django_apache/issues'
   github_branch: 'stable'
-  min_ansible_version: 2.9.0
+  min_ansible_version: 2.9.10
   description: 'Role to deploy one or multiple django sites using apache2 to host them'
   platforms:
     - name: Debian
