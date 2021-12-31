@@ -16,12 +16,12 @@ s.close()
 DB_CONFIG = '{{ site.database.config }}'
 ALLOWED_HOSTS = [OWN_IP, 'localhost', '{{ site.domain }}'{% for alias in site.aliases %}, '{{ alias }}' {% endfor %}]
 PROJECT = '{{ project }}'
-STATIC_ROOT = '{{ path_static }}/'
+STATICFILES_DIRS = ['{{ path_static }}/']
 STATIC_URL = '{{ site.static_url }}/'
 
 # Security relevant
 SECRET_KEY = '{{ lookup('password', '/dev/null chars=ascii_letters,digits length=50') }}'
-DEBUG = True
+DEBUG = False
 
 {% raw %}
 # Basic config

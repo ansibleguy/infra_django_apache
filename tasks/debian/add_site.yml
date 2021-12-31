@@ -186,8 +186,11 @@
   environment:
     PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
-  when: django_venv_create_raw.changed
+  when:
+    - django_venv_create_raw.changed
+    - site.collectstatic
   tags: [sites, sync, db, django]
+  ignore_errors: true
 
 - name: "Django | Debian | Site '{{ name }}' | Getting current user"
   ansible.builtin.command: 'whoami'

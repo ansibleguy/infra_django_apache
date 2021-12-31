@@ -53,6 +53,7 @@ default_site_config:
     path: '/var/www/django'  # path used for static files
 
   static_url: 'public'  # sub-url that is used for static files (as configured in django's settings.py)
+  collectstatic: false  # 'STATIC_ROOT' django-setting must be defined!
   path_venv: '/var/lib/django_venv'  # path to the python virtual environment
   path_code: '/var/lib/django'  # where the code will be placed
   project: 'base'  # directory used to store the default-settings (used to store 'settings.py'; normally it equals the project name)

@@ -21,6 +21,7 @@ Ansible Role to deploy one or multiple Django applications on a linux server usi
   * **Default opt-outs**:
     * Database backup service
     * Special apache config => can be passed using the 'django' dictionary
+    * Running 'collectstatic'
 
 
   * **Default config**:
