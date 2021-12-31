@@ -63,7 +63,7 @@ default_site_config:
     host: 'localhost'
     db: 'django'
     user: 'django'
-    pwd: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=20') }}"
+    # pwd: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=20') }}"
     charset: 'utf8mb4'
     socket:
     config: 'db.cnf'  # file will be placed in the django root path
@@ -130,3 +130,5 @@ default_site_config:
 apache_sites: {}
 mariadb_instances: {}
 force_removal: false
+random_pwd_length: '50'  # must be string-type
+tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_django_apache_'

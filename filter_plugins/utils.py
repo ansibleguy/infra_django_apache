@@ -27,7 +27,7 @@ class FilterModule(object):
         return f"python{version}"
 
     @staticmethod
-    def prepare_mariadb(site: dict, name: str) -> dict:
+    def prepare_mariadb(site: dict, name: str, pwd: str) -> dict:
         return {
             name: {
                 'state': site['state'],
@@ -37,7 +37,7 @@ class FilterModule(object):
                 'users': {
                     site['database']['user']: {
                         'priv': f"{site['database']['db']}.*:ALL",
-                        'pwd': site['database']['pwd'],
+                        'pwd': pwd,
                         'update_pwd': site['database']['update_pwd'],
                     }
                 },

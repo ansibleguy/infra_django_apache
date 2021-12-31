@@ -40,7 +40,7 @@
 
 - name: Django | Debian | Building MariaDB instances
   ansible.builtin.set_fact:
-    mariadb_instances: "{{ mariadb_instances | combine(site | prepare_mariadb(name)) }}"
+    mariadb_instances: "{{ mariadb_instances | combine(site | prepare_mariadb(name, pwd)) }}"
   when:
     - site.database.manage
     - "site.database.type in ['mysql', 'mariadb']"
@@ -48,6 +48,7 @@
   vars:
     site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
     name: "{{ site_item.key | safe_key }}"
+    pwd: "{{ site.database.pwd | default(lookup('password', tmp_pwd_file_prefix + name + '_mdb chars=ascii_letters,digits length=' + random_pwd_length) ) }}"
   loop_control:
     loop_var: site_item
   with_dict: "{{ DJANGO_CONFIG.sites }}"

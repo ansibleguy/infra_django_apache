@@ -249,3 +249,8 @@
     mode: 0755
     recurse: true
   tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Cleaning up temporary password file"
+  ansible.builtin.file:
+    path: "{{ tmp_pwd_file_prefix }}{{ name }}_mdb"
+    state: absent
