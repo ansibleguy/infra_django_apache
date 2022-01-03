@@ -20,7 +20,7 @@ default_django:
     mysql: ['default-libmysqlclient-dev']
 
   apache_modules:
-    present: ['wsgi', 'ssl', 'headers', 'rewrite']
+    present: ['wsgi', 'ssl', 'headers', 'rewrite', 'http2']
     absent: ['autoindex']
 
   settings: {}
