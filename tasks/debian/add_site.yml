@@ -199,7 +199,7 @@
   register: run_user_raw
   tags: [sites, sync, django]
 
-- name: "Django | Debian | Site '{{ name }}' | Adding sync privileges"
+- name: "Django | Debian | Site '{{ name }}' | Adding temporary sync privileges"
   ansible.builtin.template:
     src: 'templates/etc/sudoers.d/sync.j2'
     dest: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
@@ -208,6 +208,7 @@
     owner: 'root'
     group: 'root'
   tags: [sites, sync, django]
+  when: run_user_raw.stdout != 'root'
 
 - name: "Django | Debian | Site '{{ name }}' | Syncing code"
   ansible.posix.synchronize:
@@ -234,6 +235,11 @@
     - site.sync_code.enabled
     - site.sync_code.static_src | default(none, true) is not none
   tags: [sites, sync, django]
+
+- name: "Django | Debian | Site '{{ name }}' | Removing temporary sync privileges"
+  ansible.builtin.file:
+    path: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
+    state: absent
 
 - name: "Django | Debian | Site '{{ name }}' | Updating privileges for code"
   ansible.builtin.file:
