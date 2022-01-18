@@ -16,7 +16,7 @@
     owner: "{{ DJANGO_CONFIG.user }}"
     group: "{{ DJANGO_CONFIG.group }}"
     mode: 0755
-  with_items:
+  loop:
     - "{{ path }}"
     - "{{ site.path_venv }}"
     - "{{ path_static }}"

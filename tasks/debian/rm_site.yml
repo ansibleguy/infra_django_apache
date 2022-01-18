@@ -13,7 +13,7 @@
   when: >
     force_removal or
     removal_prompt.user_input == 'yes'
-  with_items:
+  loop:
     - "{{ path }}"
     - "{{ site.path_venv }}"
     - "{{ site.static_path }}"
