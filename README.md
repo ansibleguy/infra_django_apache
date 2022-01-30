@@ -1,6 +1,6 @@
 [![Django](https://static.djangoproject.com/img/logos/django-logo-negative.svg)](https://www.djangoproject.com)
 
-# Django Role
+# Ansible Role - Python3 Django
 Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
 
 **Tested:**
