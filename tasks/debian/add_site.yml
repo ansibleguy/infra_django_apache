@@ -196,6 +196,7 @@
   ansible.builtin.command: 'whoami'
   become: false
   changed_when: false
+  check_mode: false
   register: run_user_raw
   tags: [sites, sync, django]
 
