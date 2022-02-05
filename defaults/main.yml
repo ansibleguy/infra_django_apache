@@ -25,7 +25,9 @@ default_django:
 
   settings: {}
   config: {}
-  headers: {}  # you might need to disable/change some security headers (p.e. Content-Security-Policy) depending on your application! for more info see: https://github.com/ansibleguy/infra_apache
+  headers: {}
+  # you might need to disable/change some security headers (p.e. Content-Security-Policy) depending on your application!
+  # for more info see: https://github.com/ansibleguy/infra_apache
   ssl: {}  # see: https://github.com/ansibleguy/infra_certs
   modules: {}  # apache modules
 

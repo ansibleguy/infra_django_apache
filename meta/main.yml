@@ -18,8 +18,5 @@ galaxy_info:
     - 'django'
     - 'python'
 
-#requirements:
-#  - 'ansibleguy.infra_apache'
-
 collections:
   - 'community.general'
