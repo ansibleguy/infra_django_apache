@@ -3,6 +3,9 @@
 # Ansible Role - Python3 Django
 Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
 
+[![Ansible Galaxy](https://img.shields.io/ansible/role/56812)](https://galaxy.ansible.com/ansibleguy/infra_django_apache)
+[![Ansible Galaxy Downloads](https://img.shields.io/badge/dynamic/json?color=blueviolet&label=Galaxy%20Downloads&query=%24.download_count&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F56812%2F%3Fformat%3Djson)](https://galaxy.ansible.com/ansibleguy/infra_django_apache)
+
 **Tested:**
 * Debian 11
 
