@@ -264,3 +264,6 @@
   ansible.builtin.file:
     path: "{{ tmp_pwd_file_prefix }}{{ name }}_mdb"
     state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
