@@ -1,5 +1,19 @@
 ---
 
+- name: "Django | Debian | Site '{{ name }}' | Showing debug info - user provided config"
+  ansible.builtin.debug:
+    var: site_item.value
+  when:
+    - debug is defined
+    - debug
+
+- name: "Django | Debian | Site '{{ name }}' | Showing debug info - running config"
+  ansible.builtin.debug:
+    var: site
+  when:
+    - debug is defined
+    - debug
+
 - name: "Django | Debian | Site '{{ name }}' | Configuring site"
   ansible.builtin.template:
     src: 'templates/etc/apache2/sites-available/django.conf.j2'

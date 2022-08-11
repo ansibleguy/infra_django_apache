@@ -1,5 +1,19 @@
 ---
 
+- name: Django | Debian | Showing debug info - user provided config
+  ansible.builtin.debug:
+    var: django
+  when:
+    - debug is defined
+    - debug
+
+- name: Django | Debian | Showing debug info - running config
+  ansible.builtin.debug:
+    var: DJANGO_CONFIG
+  when:
+    - debug is defined
+    - debug
+
 - name: Django | Debian | Installing base packages
   ansible.builtin.apt:
     name: "{{ DJANGO_CONFIG.packages.base }}"
@@ -18,7 +32,7 @@
   ansible.builtin.set_fact:
     apache_sites: "{{ apache_sites | combine(name|get_dict(site)) }}"
   vars:
-    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    site: "{{ defaults_site | combine(site_item.value, recursive=true) }}"
     name: "{{ site_item.key | safe_key }}"
   loop_control:
     loop_var: site_item
@@ -46,7 +60,7 @@
     - "site.database.type in ['mysql', 'mariadb']"
     - "site.database.host in ['localhost', '127.0.0.1', none, '', ' ']"
   vars:
-    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    site: "{{ defaults_site | combine(site_item.value, recursive=true) }}"
     name: "{{ site_item.key | safe_key }}"
     pwd: "{{ site.database.pwd | default(lookup('password', tmp_pwd_file_prefix + name + '_mdb chars=ascii_letters,digits length=' + random_pwd_length) ) }}"
   loop_control:
@@ -71,7 +85,7 @@
   ansible.builtin.include_tasks: rm_site.yml
   when: site.state != 'present'
   vars:
-    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    site: "{{ defaults_site | combine(site_item.value, recursive=true) }}"
     path: "{{ site.path_code }}"
     name: "{{ site_item.key | safe_key }}"
   loop_control:
@@ -90,7 +104,7 @@
   ansible.builtin.include_tasks: add_site.yml
   when: site.state == 'present'
   vars:
-    site: "{{ default_site_config | combine(site_item.value, recursive=true) }}"
+    site: "{{ defaults_site | combine(site_item.value, recursive=true) }}"
     path: "{{ site.path_code }}"
     path_static: "{{ site.serve.path }}"
     name: "{{ site_item.key | safe_key }}"

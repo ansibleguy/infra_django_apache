@@ -1,0 +1,7 @@
+---
+
+apache_sites: {}
+mariadb_instances: {}
+force_removal: false
+random_pwd_length: '50'  # must be string-type
+tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_django_apache_'

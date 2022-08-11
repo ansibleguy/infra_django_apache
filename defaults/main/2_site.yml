@@ -1,46 +1,7 @@
 ---
 
-# default config => is overwritten by provided config
-default_django:
-  # will overwrite the apache config as seen in the main defaults file of ansibleguy.infra_apache (see: https://github.com/ansibleguy/infra_apache)
-  sites: {}
-
-  user: 'www-data'
-  group: 'www-data'
-
-  databases: ['mysql']  # types of databases the role should prepare to support
-
-  python_modules:
-    base: ['django', 'pyinotify']
-    mysql: ['django_mysql', 'mysqlclient']
-    pgsql: ['psycopg2']
-
-  packages:
-    base: ['python3', 'python3-virtualenv', 'python3-pip', 'libapache2-mod-wsgi-py3', 'rsync']
-    mysql: ['default-libmysqlclient-dev']
-
-  apache_modules:
-    present: ['wsgi', 'ssl', 'headers', 'rewrite', 'http2']
-    absent: ['autoindex']
-
-  settings: {}
-  config: {}
-  headers: {}
-  # you might need to disable/change some security headers (p.e. Content-Security-Policy) depending on your application!
-  # for more info see: https://github.com/ansibleguy/infra_apache
-  ssl: {}  # see: https://github.com/ansibleguy/infra_certs
-  modules: {}  # apache modules
-
-  security:
-    restricted_methods: ['GET', 'POST', 'HEAD']  # you might need to extend/disable this filter depending on your application!
-
-  letsencrypt:
-    email:
-
-DJANGO_CONFIG: "{{ default_django | combine(django, recursive=true) }}"
-
 # site-specific config
-default_site_config:
+defaults_site:
   mode: 'serve'  # DO NOT CHANGE!
   app_include: true  # DO NOT CHANGE!
   state: 'present'
@@ -129,9 +90,3 @@ default_site_config:
 
   letsencrypt:
     email:
-
-apache_sites: {}
-mariadb_instances: {}
-force_removal: false
-random_pwd_length: '50'  # must be string-type
-tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_django_apache_'

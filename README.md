@@ -98,3 +98,8 @@ There are also some useful **tags** available:
 * db
 * sync => only sync local code to remote host (_if enabled by user_)
 * django => don't start sub-roles for apache and/or mariadb
+
+To debug errors - you can set the 'debug' variable at runtime:
+```bash
+ansible-playbook -K -D -i inventory/hosts.yml playbook.yml -e debug=yes
+```
