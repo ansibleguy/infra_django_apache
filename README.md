@@ -1,4 +1,6 @@
-[![Django](https://static.djangoproject.com/img/logos/django-logo-negative.svg)](https://www.djangoproject.com)
+<a href="https://www.djangoproject.com">
+<img src="https://static.djangoproject.com/img/logos/django-logo-negative.svg" alt="Django Logo" width="300"/>
+</a>
 
 # Ansible Role - Python3 Django
 Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
