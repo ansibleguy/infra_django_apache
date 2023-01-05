@@ -8,6 +8,7 @@
 
 - name: "Django | Debian | Remove Site '{{ name }}' | Removing directories and files"
   ansible.builtin.file:
+    path: "{{ item }}"
     state: absent
     force: true
   when: >
