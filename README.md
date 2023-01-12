@@ -14,6 +14,18 @@ Ansible Role to deploy one or multiple Django applications on a linux server usi
 **Tested:**
 * Debian 11
 
+## Install
+
+```bash
+ansible-galaxy install ansibleguy.infra_django_apache
+
+# or to custom role-path
+ansible-galaxy install ansibleguy.infra_django_apache --roles-path ./roles
+
+# install dependencies
+ansible-galaxy install -r requirements.yml
+```
+
 ## Functionality
 
 * **Package installation**
