@@ -3,10 +3,10 @@
 # install: ansible-galaxy install -r requirements.yml
 
 collections:
-  - name: 'community.general'
-  - name: 'ansible.posix'
-  - name: 'community.mysql'
-  - name: 'community.crypto'
+  - 'community.general'
+  - 'ansible.posix'
+  - 'community.mysql'
+  - 'community.crypto'
 
 roles:
   - src: 'ansibleguy.infra_apache'
