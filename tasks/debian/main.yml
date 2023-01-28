@@ -51,6 +51,9 @@
       sites: "{{ apache_sites }}"
   no_log: true
   tags: [config, sites, certs]
+  args:
+    apply:
+      tags: [config, sites, certs]
 
 - name: Django | Debian | Building MariaDB instances
   ansible.builtin.set_fact:
@@ -71,7 +74,7 @@
 
 # is an additional site-loop since certificates can be pre-/absent
 - name: Django | Debian | Configuring MariaDB instances
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: ansibleguy.infra_mariadb
   vars:
     mariadb:
@@ -80,6 +83,9 @@
     - mariadb_instances is defined
     - mariadb_instances | length > 0
   tags: [db, sites]
+  args:
+    apply:
+      tags: [db, sites]
 
 - name: Django | Debian | Removing site
   ansible.builtin.include_tasks: rm_site.yml
@@ -93,6 +99,9 @@
   with_dict: "{{ DJANGO_CONFIG.sites }}"
   no_log: true
   tags: [config, sites, db, django]
+  args:
+    apply:
+      tags: [config, sites, db, django]
 
 - name: Django | Debian | Reloading apache
   ansible.builtin.systemd:
@@ -115,6 +124,9 @@
   with_dict: "{{ DJANGO_CONFIG.sites }}"
   no_log: true
   tags: [config, sites, db, django]
+  args:
+    apply:
+      tags: [config, sites, db, django]
 
 - name: Django | Debian | Reloading apache
   ansible.builtin.systemd:
