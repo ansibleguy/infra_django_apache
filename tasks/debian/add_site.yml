@@ -177,6 +177,7 @@
     PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
   when: django_venv_create_raw.changed
+  changed_when: false
   tags: [sites, sync, db, django]
 
 - name: "Django | Debian | Site '{{ name }}' | Migrating database schema"
@@ -188,6 +189,7 @@
   environment:
     PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
+  changed_when: false
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]
 
@@ -200,6 +202,7 @@
   environment:
     PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
+  changed_when: false
   when:
     - django_venv_create_raw.changed
     - site.collectstatic
