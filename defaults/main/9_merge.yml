@@ -1,0 +1,3 @@
+---
+
+DJANGO_CONFIG: "{{ defaults_django | combine(django, recursive=true) }}"

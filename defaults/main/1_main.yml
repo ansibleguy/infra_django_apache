@@ -37,6 +37,4 @@ defaults_django:
   letsencrypt:
     email:
 
-DJANGO_CONFIG: "{{ defaults_django | combine(django, recursive=true) }}"
-
 debug: false
