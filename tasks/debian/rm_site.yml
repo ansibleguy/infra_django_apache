@@ -1,12 +1,12 @@
 ---
 
-- name: "Django | Debian | Remove Site '{{ name }}' | Ask user"
+- name: "Django | Remove Site '{{ name }}' | Ask user"
   ansible.builtin.pause:
     prompt: "Do you really want to remove the django site '{{ name }}' and all of its data?"
   register: removal_prompt
   when: not force_removal
 
-- name: "Django | Debian | Remove Site '{{ name }}' | Removing directories and files"
+- name: "Django | Remove Site '{{ name }}' | Removing directories and files"
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
