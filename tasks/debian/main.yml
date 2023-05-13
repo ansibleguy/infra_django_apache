@@ -3,16 +3,12 @@
 - name: Django | Debian | Showing debug info - user provided config
   ansible.builtin.debug:
     var: django
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: Django | Debian | Showing debug info - running config
   ansible.builtin.debug:
     var: DJANGO_CONFIG
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: Django | Debian | Installing base packages
   ansible.builtin.apt:
