@@ -24,7 +24,7 @@
   when: "'mysql' in DJANGO_CONFIG.databases or 'mariadb' in DJANGO_CONFIG.databases"
   tags: [base, db, django]
 
-- name: Django| | Building apache sites
+- name: Django | Building apache sites
   ansible.builtin.set_fact:
     apache_sites: "{{ apache_sites | combine(name | get_dict(site)) }}"
   vars:
@@ -37,7 +37,7 @@
   tags: [config, sites, certs]
 
 # is an additional site-loop since certificates can be pre-/absent
-- name: Django| | Configuring Apache sites
+- name: Django | Configuring Apache sites
   ansible.builtin.include_role:
     name: ansibleguy.infra_apache
   vars:
@@ -51,7 +51,7 @@
     apply:
       tags: [config, sites, certs]
 
-- name: Django| | Building MariaDB instances
+- name: Django | Building MariaDB instances
   ansible.builtin.set_fact:
     mariadb_instances: "{{ mariadb_instances | combine(site | prepare_mariadb(name, pwd)) }}"
   when:
@@ -69,7 +69,7 @@
   tags: [db, sites]
 
 # is an additional site-loop since certificates can be pre-/absent
-- name: Django| | Configuring MariaDB instances
+- name: Django | Configuring MariaDB instances
   ansible.builtin.include_role:
     name: ansibleguy.infra_mariadb
   vars:
@@ -83,7 +83,7 @@
     apply:
       tags: [db, sites]
 
-- name: Django| | Removing site
+- name: Django | Removing site
   ansible.builtin.include_tasks: rm_site.yml
   when: site.state != 'present'
   vars:
@@ -99,13 +99,13 @@
     apply:
       tags: [config, sites, db, django]
 
-- name: Django| | Reloading apache
+- name: Django | Reloading apache
   ansible.builtin.systemd:
     name: 'apache2.service'
     state: reloaded
   tags: [base, config, sites, db, django]
 
-- name: Django| | Adding site
+- name: Django | Adding site
   ansible.builtin.include_tasks: add_site.yml
   when: site.state == 'present'
   vars:
@@ -124,7 +124,7 @@
     apply:
       tags: [config, sites, db, django]
 
-- name: Django| | Reloading apache
+- name: Django | Reloading apache
   ansible.builtin.systemd:
     name: 'apache2.service'
     state: reloaded

@@ -44,7 +44,7 @@
   register: django_db_config_raw
   tags: [sites, config, db, django]
 
-- name: "Django| | Site '{{ name }}' | Configuring database connection for mysql/mariadb"
+- name: "Django | Site '{{ name }}' | Configuring database connection for mysql/mariadb"
   ansible.builtin.template:
     src: 'templates/var/lib/django/mysql_db.cnf.j2'
     dest: "{{ path }}/{{ site.database.config }}"
@@ -56,7 +56,7 @@
     - "site.database.type in ['mysql', 'mariadb']"
   tags: [sites, config, db, django]
 
-- name: "Django| | Site '{{ name }}' | Configuring database connection for pgsql"
+- name: "Django | Site '{{ name }}' | Configuring database connection for pgsql"
   ansible.builtin.template:
     src: 'templates/var/lib/django/pgsql_db.cnf.j2'
     dest: "{{ path }}/{{ site.database.config }}"
@@ -68,7 +68,7 @@
     - "site.database.type in ['pgsql', 'postgres']"
   tags: [sites, config, db, django]
 
-- name: "Django| | Site '{{ name }}' | Copying db update script"
+- name: "Django | Site '{{ name }}' | Copying db update script"
   ansible.builtin.template:
     src: "templates/var/lib/django/update_schema.sh.j2"
     dest: "{{ site.path_venv }}/update_schema.sh"
@@ -77,7 +77,7 @@
     mode: 0755
   tags: [sites]
 
-- name: "Django| | Site '{{ name }}' | Installing python3 base-modules"
+- name: "Django | Site '{{ name }}' | Installing python3 base-modules"
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.base }}"
     virtualenv: "{{ site.path_venv }}"
@@ -87,7 +87,7 @@
   register: django_venv_create_raw
   tags: [sites, django]
 
-- name: "Django| | Site '{{ name }}' | Installing mysql/mariadb python modules"
+- name: "Django | Site '{{ name }}' | Installing mysql/mariadb python modules"
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.mysql }}"
     virtualenv: "{{ site.path_venv }}"
@@ -97,7 +97,7 @@
   when: "site.database.type in ['mysql', 'mariadb']"
   tags: [sites, django]
 
-- name: "Django| | Site '{{ name }}' | Installing postgres python modules"
+- name: "Django | Site '{{ name }}' | Installing postgres python modules"
   ansible.builtin.pip:
     name: "{{ DJANGO_CONFIG.python_modules.pgsql }}"
     virtualenv: "{{ site.path_venv }}"
@@ -107,7 +107,7 @@
   when: "site.database.type in ['pgsql', 'postgres']"
   tags: [sites, django]
 
-- name: "Django| | Site '{{ name }}' | Installing custom python modules"
+- name: "Django | Site '{{ name }}' | Installing custom python modules"
   ansible.builtin.pip:
     name: "{{ module }}"
     virtualenv: "{{ site.path_venv }}"
@@ -122,7 +122,7 @@
   loop: "{{ site.python_modules.present }}"
   tags: [sites, django]
 
-- name: "Django| | Site '{{ name }}' | Removing python modules"
+- name: "Django | Site '{{ name }}' | Removing python modules"
   ansible.builtin.pip:
     name: "{{ site.python_modules.absent }}"
     virtualenv: "{{ site.path_venv }}"
@@ -132,7 +132,7 @@
   when: site.python_modules.absent | length > 0
   tags: [sites, django]
 
-- name: "Django| | Site '{{ name }}' | Initializing django project"
+- name: "Django | Site '{{ name }}' | Initializing django project"
   ansible.builtin.shell: "source {{ site.path_venv }}/bin/activate &&
   {{ site.path_venv }}/bin/django-admin startproject {{ project }} {{ path }}"
   args:
@@ -145,13 +145,13 @@
   when: not site.sync_code.enabled
   tags: [sites, db, django]
 
-- name: "Django| | Site '{{ name }}' | Checking if settings file exists"
+- name: "Django | Site '{{ name }}' | Checking if settings file exists"
   ansible.builtin.stat:
     path: "{{ path }}/{{ project }}/settings.py"
   register: django_settings_raw
   tags: [sites, db, django]
 
-- name: "Django| | Site '{{ name }}' | Deploying initial settings"
+- name: "Django | Site '{{ name }}' | Deploying initial settings"
   ansible.builtin.template:
     src: "templates/var/lib/django/_project/settings.py.j2"
     dest: "{{ path }}/{{ project }}/settings.py"
@@ -163,7 +163,7 @@
     - not django_settings_raw.stat.exists
   tags: [sites, db, django]
 
-- name: "Django| | Site '{{ name }}' | Building database schema"
+- name: "Django | Site '{{ name }}' | Building database schema"
   ansible.builtin.shell: "source {{ site.path_venv }}/bin/activate &&
   {{ site.path_venv }}/bin/python3 manage.py makemigrations"
   args:
@@ -176,7 +176,7 @@
   changed_when: false
   tags: [sites, sync, db, django]
 
-- name: "Django| | Site '{{ name }}' | Migrating database schema"
+- name: "Django | Site '{{ name }}' | Migrating database schema"
   ansible.builtin.shell: "source {{ site.path_venv }}/bin/activate &&
   {{ site.path_venv }}/bin/python3 manage.py migrate"
   args:
@@ -189,7 +189,7 @@
   when: django_venv_create_raw.changed
   tags: [sites, sync, db, django]
 
-- name: "Django| | Site '{{ name }}' | Collecting default static files"
+- name: "Django | Site '{{ name }}' | Collecting default static files"
   ansible.builtin.shell: "source {{ site.path_venv }}/bin/activate &&
   {{ site.path_venv }}/bin/python3 manage.py collectstatic --no-input"
   args:
@@ -205,7 +205,7 @@
   tags: [sites, sync, db, django]
   ignore_errors: true
 
-- name: "Django| | Site '{{ name }}' | Getting current user"
+- name: "Django | Site '{{ name }}' | Getting current user"
   ansible.builtin.command: 'whoami'
   become: false
   changed_when: false
@@ -213,7 +213,7 @@
   register: run_user_raw
   tags: [sites, sync, django]
 
-- name: "Django| | Site '{{ name }}' | Adding temporary sync privileges"
+- name: "Django | Site '{{ name }}' | Adding temporary sync privileges"
   ansible.builtin.template:
     src: 'templates/etc/sudoers.d/sync.j2'
     dest: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
@@ -224,7 +224,7 @@
   tags: [sites, sync, django]
   when: run_user_raw.stdout != 'root'
 
-- name: "Django| | Site '{{ name }}' | Syncing code"
+- name: "Django | Site '{{ name }}' | Syncing code"
   ansible.posix.synchronize:
     src: "{{ site.sync_code.src }}"
     dest: "{{ site.sync_code.dst | default(path, true) }}/"
@@ -237,7 +237,7 @@
     - site.sync_code.src | default(none, true) is not none
   tags: [sites, sync, django]
 
-- name: "Django| | Site '{{ name }}' | Syncing static files"
+- name: "Django | Site '{{ name }}' | Syncing static files"
   ansible.posix.synchronize:
     src: "{{ site.sync_code.static_src }}"
     dest: "{{ site.sync_code.static_dst | default(path_static, true) }}/"
@@ -250,12 +250,12 @@
     - site.sync_code.static_src | default(none, true) is not none
   tags: [sites, sync, django]
 
-- name: "Django| | Site '{{ name }}' | Removing temporary sync privileges"
+- name: "Django | Site '{{ name }}' | Removing temporary sync privileges"
   ansible.builtin.file:
     path: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
     state: absent
 
-- name: "Django| | Site '{{ name }}' | Updating privileges for code"
+- name: "Django | Site '{{ name }}' | Updating privileges for code"
   ansible.builtin.file:
     path: "{{ site.sync_code.dst | default(path, true) }}"
     owner: "{{ DJANGO_CONFIG.user }}"
@@ -264,7 +264,7 @@
     recurse: true
   tags: [sites, sync, django]
 
-- name: "Django| | Site '{{ name }}' | Updating privileges for static files"
+- name: "Django | Site '{{ name }}' | Updating privileges for static files"
   ansible.builtin.file:
     path: "{{ site.sync_code.static_dst | default(path_static, true) }}"
     owner: "{{ DJANGO_CONFIG.user }}"
@@ -273,7 +273,7 @@
     recurse: true
   tags: [sites, sync, django]
 
-- name: "Django| | Site '{{ name }}' | Cleaning up temporary password file"
+- name: "Django | Site '{{ name }}' | Cleaning up temporary password file"
   ansible.builtin.file:
     path: "{{ tmp_pwd_file_prefix }}{{ name }}_mdb"
     state: absent
