@@ -142,7 +142,7 @@
   environment:
     PYTHONPATH: "{{ path }}:{{ site.path_venv }}/lib/python{{ pyver }}/site-packages{% for pypath in site.env_pythonpath %}:{{ pypath }}{% endfor %}"
     DJANGO_SETTINGS_MODULE: "{{ project }}.settings"
-  when: not site.sync_code.enabled
+  when: not site.sync_code.enabled | bool
   tags: [sites, db, django]
 
 - name: "Django | Site '{{ name }}' | Checking if settings file exists"
@@ -233,7 +233,7 @@
     rsync_path: 'sudo rsync'
     rsync_opts: "{{ site.sync_code.options }}"
   when:
-    - site.sync_code.enabled
+    - site.sync_code.enabled | bool
     - site.sync_code.src | default(none, true) is not none
   tags: [sites, sync, django]
 
@@ -246,7 +246,7 @@
     rsync_path: 'sudo rsync'
     rsync_opts: "{{ site.sync_code.options }}"
   when:
-    - site.sync_code.enabled
+    - site.sync_code.enabled | bool
     - site.sync_code.static_src | default(none, true) is not none
   tags: [sites, sync, django]
 
