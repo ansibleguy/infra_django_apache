@@ -3,7 +3,10 @@
 </a>
 
 # Ansible Role - Python3 Django
+
 Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
+
+<a href='https://ko-fi.com/ansible0guy' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy me a coffee' />
 
 [![Molecule Test Status](https://badges.ansibleguy.net/infra_django_apache.molecule.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/molecule.sh.j2)
 [![YamlLint Test Status](https://badges.ansibleguy.net/infra_django_apache.yamllint.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/yamllint.sh.j2)
