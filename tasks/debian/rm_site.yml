@@ -13,7 +13,7 @@
     force: true
   when: >
     force_removal or
-    removal_prompt.user_input == 'yes'
+    removal_prompt.user_input | bool
   loop:
     - "{{ path }}"
     - "{{ site.path_venv }}"
