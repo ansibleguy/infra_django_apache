@@ -35,45 +35,7 @@ ansible-galaxy install ansibleguy.infra_django_apache --roles-path ./roles
 ansible-galaxy install -r requirements.yml
 ```
 
-## Functionality
-
-* **Package installation**
-  * Ansible dependencies (_minimal_)
-
-
-* **Configuration**
-  * Apache using [THIS](https://github.com/ansibleguy/infra_apache) role
-  * Support for MySQL or PostgreSQL
-
-  * **Default opt-in**:
-    * MariaDB database using [THIS](https://github.com/ansibleguy/infra_mariadb) role
-
-
-  * **Default opt-outs**:
-    * Database backup service
-    * Special apache config => can be passed using the 'django' dictionary
-    * Running 'collectstatic'
-
-
-  * **Default config**:
-    * A Self-Signed certificate will be used
-    * Database type => MariaDB
-      * Database will be installed automatically 
-    * Using a python virtual environment
-    * A database migration script will be created in the venv directory
-
-## Info
-
-* **Note:** this role currently only supports debian-based systems
-
-
-* **Note:** Most of the role's functionality can be opted in or out.
-
-  For all available options - see the default-config located in the main/site defaults-file!
-
-
-* **Warning:** Not every setting/variable you provide will be checked for validity. Bad config might break the role!
-
+----
 
 ## Usage
 
@@ -133,3 +95,47 @@ To debug errors - you can set the 'debug' variable at runtime:
 ```bash
 ansible-playbook -K -D -i inventory/hosts.yml playbook.yml -e debug=yes
 ```
+
+----
+
+## Functionality
+
+* **Package installation**
+  * Ansible dependencies (_minimal_)
+
+
+* **Configuration**
+  * Apache using [THIS](https://github.com/ansibleguy/infra_apache) role
+  * Support for MySQL or PostgreSQL
+
+  * **Default opt-in**:
+    * MariaDB database using [THIS](https://github.com/ansibleguy/infra_mariadb) role
+
+
+  * **Default opt-outs**:
+    * Database backup service
+    * Special apache config => can be passed using the 'django' dictionary
+    * Running 'collectstatic'
+
+
+  * **Default config**:
+    * A Self-Signed certificate will be used
+    * Database type => MariaDB
+      * Database will be installed automatically 
+    * Using a python virtual environment
+    * A database migration script will be created in the venv directory
+
+----
+
+## Info
+
+* **Note:** this role currently only supports debian-based systems
+
+
+* **Note:** Most of the role's functionality can be opted in or out.
+
+  For all available options - see the default-config located in the main/site defaults-file!
+
+
+* **Warning:** Not every setting/variable you provide will be checked for validity. Bad config might break the role!
+
