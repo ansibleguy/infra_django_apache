@@ -39,7 +39,7 @@
 # is an additional site-loop since certificates can be pre-/absent
 - name: Django | Configuring Apache sites
   ansible.builtin.include_role:
-    name: ansibleguy.infra_apache
+    name: oxlorg.apache2
   vars:
     apache:
       security: "{{ DJANGO_CONFIG.security }}"
@@ -71,7 +71,7 @@
 # is an additional site-loop since certificates can be pre-/absent
 - name: Django | Configuring MariaDB instances
   ansible.builtin.include_role:
-    name: ansibleguy.infra_mariadb
+    name: oxlorg.mariadb
   vars:
     mariadb:
       instances: "{{ mariadb_instances }}"

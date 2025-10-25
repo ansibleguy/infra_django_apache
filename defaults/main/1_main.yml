@@ -2,7 +2,7 @@
 
 # default config => is overwritten by provided config
 defaults_django:
-  # will overwrite the apache config as seen in the main defaults file of ansibleguy.infra_apache (see: https://github.com/ansibleguy/infra_apache)
+  # will overwrite the apache config as seen in the main defaults file of oxlorg.apache2 (see: https://github.com/O-X-L/ansible-role-apache2)
   sites: {}
 
   user: 'www-data'
@@ -27,8 +27,8 @@ defaults_django:
   config: {}
   headers: {}
   # you might need to disable/change some security headers (p.e. Content-Security-Policy) depending on your application!
-  # for more info see: https://github.com/ansibleguy/infra_apache
-  ssl: {}  # see: https://github.com/ansibleguy/infra_certs
+  # for more info see: https://github.com/O-X-L/ansible-role-apache2
+  ssl: {}  # see: https://github.com/O-X-L/ansible-role-certs
   modules: {}  # apache modules
 
   security:

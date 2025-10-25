@@ -9,6 +9,11 @@ collections:
   - 'community.crypto'
 
 roles:
-  - src: 'ansibleguy.infra_apache'
-  - src: 'ansibleguy.infra_certs'
-  - src: 'ansibleguy.infra_mariadb'
+  - name: 'oxlorg.apache2'
+    src: 'git+https://github.com/O-X-L/ansible-role-apache2'
+
+  - name: 'oxlorg.certs'
+    src: 'git+https://github.com/O-X-L/ansible-role-certs'
+
+  - name: 'oxlorg.mariadb'
+    src: 'git+https://github.com/O-X-L/ansible-role-mariadb'

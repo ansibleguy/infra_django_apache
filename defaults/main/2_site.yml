@@ -5,14 +5,14 @@ defaults_site:
   mode: 'serve'  # DO NOT CHANGE!
   app_include: true  # DO NOT CHANGE!
   state: 'present'
-  admin: 'django@template.ansibleguy.net'
+  admin: 'django@template.oxl.at'
   port_plain: 80
   port_ssl: 443
   domain:
   aliases: []
   ip:
 
-  serve:  # used to pass to ansibleguy.infra_apache
+  serve:  # used to pass to oxlorg.apache2
     path: '/var/www/django'  # path used for static files
 
   static_url: 'public'  # sub-url that is used for static files (as configured in django's settings.py)
@@ -23,7 +23,7 @@ defaults_site:
 
   database:
     type: 'mariadb'
-    manage: true  # if the database should be managed by the ansibleguy.infra_mariadb role; only if type in ['mysql', 'mariadb']
+    manage: true  # if the database should be managed by the oxlorg.mariadb role; only if type in ['mysql', 'mariadb']
     host: 'localhost'
     db: 'django'
     user: 'django'
@@ -56,11 +56,11 @@ defaults_site:
   headers: {}
   security: {}
 
-  ssl:  # see: https://github.com/ansibleguy/infra_certs
+  ssl:  # see: https://github.com/O-X-L/ansible-role-certs
     mode: 'snakeoil'  # existing/selfsigned/ca/letsencrypt/snakeoil
     # existing:
     #   We expect the certs to be placed in the role's 'files' directory named like the site
-    #   Example: files/certs/ansibleguy.key and files/certs/ansibleguy.crt
+    #   Example: files/certs/oxlorg.key and files/certs/oxlorg.crt
     # letsencrypt:
     #   Host needs to have a valid public dns record pointed at it
     #   Needs to be publicly reachable over port 80/tcp

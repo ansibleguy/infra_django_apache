@@ -6,16 +6,16 @@
 
 Ansible Role to deploy one or multiple Django applications on a linux server using Apache2 as webserver.
 
-[![Lint](https://github.com/ansibleguy/infra_django_apache/actions/workflows/lint.yml/badge.svg)](https://github.com/ansibleguy/infra_django_apache/actions/workflows/lint.yml)
-[![Ansible Galaxy](https://badges.ansibleguy.net/galaxy.badge.svg)](https://galaxy.ansible.com/ui/standalone/roles/ansibleguy/infra_django_apache)
+[![Lint](https://github.com/O-X-L/ansible-role-django-apache2/actions/workflows/lint.yml/badge.svg)](https://github.com/O-X-L/ansible-role-django-apache2/actions/workflows/lint.yml)
+[![Ansible Galaxy](https://badges.oss.oxl.app/galaxy.badge.svg)](https://galaxy.ansible.com/ui/standalone/roles/oxlorg/django_apache2)
 
 **Molecule Integration-Tests**:
 
-* Status: [![Molecule Test Status](https://badges.ansibleguy.net/infra_django_apache.molecule.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/molecule.sh.j2) |
-[![Functional-Tests](https://github.com/ansibleguy/infra_django_apache/actions/workflows/integration_test_result.yml/badge.svg)](https://github.com/ansibleguy/infra_django_apache/actions/workflows/integration_test_result.yml)
-* Logs: [API](https://ci.ansibleguy.net/api/job/ansible-test-molecule-infra_django_apache/logs?token=2b7bba30-9a37-4b57-be8a-99e23016ce70&lines=1000) | [Short](https://badges.ansibleguy.net/log/molecule_infra_django_apache_test_short.log) | [Full](https://badges.ansibleguy.net/log/molecule_infra_django_apache_test.log)
+* Status: [![Molecule Test Status](https://badges.oss.oxl.app/infra_django_apache.molecule.svg)](https://github.com/O-X-L/ansible-role-oxl-cicd/blob/latest/templates/usr/local/bin/cicd/molecule.sh.j2) |
+[![Functional-Tests](https://github.com/O-X-L/ansible-role-django-apache2/actions/workflows/integration_test_result.yml/badge.svg)](https://github.com/O-X-L/ansible-role-django-apache2/actions/workflows/integration_test_result.yml)
+* Logs: [API](https://ci.oss.oxl.app/api/job/ansible-test-molecule-infra_django_apache/logs?token=2b7bba30-9a37-4b57-be8a-99e23016ce70&lines=1000) | [Short](https://badges.oss.oxl.app/log/molecule_infra_django_apache_test_short.log) | [Full](https://badges.oss.oxl.app/log/molecule_infra_django_apache_test.log)
 
-Internal CI: [Tester Role](https://github.com/ansibleguy/_meta_cicd) | [Jobs API](https://github.com/O-X-L/github-self-hosted-jobs-systemd)
+Internal CI: [Tester Role](https://github.com/O-X-L/ansible-role-oxl-cicd) | [Jobs API](https://github.com/O-X-L/github-self-hosted-jobs-systemd)
 
 **Tested:**
 * Debian 11
@@ -27,13 +27,13 @@ Internal CI: [Tester Role](https://github.com/ansibleguy/_meta_cicd) | [Jobs API
 
 ```bash
 # latest
-ansible-galaxy role install git+https://github.com/ansibleguy/infra_django_apache
+ansible-galaxy role install git+https://github.com/O-X-L/ansible-role-django-apache2
 
 # from galaxy
-ansible-galaxy install ansibleguy.infra_django_apache
+ansible-galaxy install oxlorg.django_apache2
 
 # or to custom role-path
-ansible-galaxy install ansibleguy.infra_django_apache --roles-path ./roles
+ansible-galaxy install oxlorg.django_apache2 --roles-path ./roles
 
 # install dependencies
 ansible-galaxy install -r requirements.yml
@@ -55,7 +55,7 @@ ansible-galaxy install -r requirements.yml
 
 * You want a simple **Ansible GUI**?
 
-  Check-out this [Ansible WebUI](https://github.com/ansibleguy/webui)
+  Check-out this [Ansible WebUI](https://github.com/O-X-L/ansible-webui)
 
 ----
 
@@ -69,13 +69,13 @@ You need to define your instances by configuring the 'mariadb' dictionary!
 django:
   sites:
     niceApp:
-      domain: 'django.ansibleguy.net'
+      domain: 'django.oxl.at'
       project: 'super'  # the directory containing the 'settings.py' is named like this 
       
       sync_code:  # sync's local code to the remote server
         enabled: true
-        src: '/home/ansibleguy/code/niceApp'
-        static_src: '/home/ansibleguy/code/niceApp_static'
+        src: '/home/oxlorg/code/niceApp'
+        static_src: '/home/oxlorg/code/niceApp_static'
       
       venv: '/var/lib/niceApp'
 
@@ -88,7 +88,7 @@ django:
         mode: 'letsencrypt'
 
       letsencrypt:
-        email: 'django@template.ansibleguy.net'
+        email: 'django@template.oxl.at'
 ```
 
 You might want to use 'ansible-vault' to encrypt your passwords:
@@ -125,11 +125,11 @@ ansible-playbook -K -D -i inventory/hosts.yml playbook.yml -e debug=yes
 
 
 * **Configuration**
-  * Apache using [THIS](https://github.com/ansibleguy/infra_apache) role
+  * Apache using [THIS](https://github.com/O-X-L/ansible-role-apache2) role
   * Support for MySQL or PostgreSQL
 
   * **Default opt-in**:
-    * MariaDB database using [THIS](https://github.com/ansibleguy/infra_mariadb) role
+    * MariaDB database using [THIS](https://github.com/O-X-L/ansible-role-mariadb) role
 
 
   * **Default opt-outs**:

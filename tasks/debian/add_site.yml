@@ -216,7 +216,7 @@
 - name: "Django | Site '{{ name }}' | Adding temporary sync privileges"
   ansible.builtin.template:
     src: 'templates/etc/sudoers.d/sync.j2'
-    dest: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
+    dest: '/etc/sudoers.d/ansible_django_apache2'
     validate: '/usr/sbin/visudo -cf %s'
     mode: 0640
     owner: 'root'
@@ -252,7 +252,7 @@
 
 - name: "Django | Site '{{ name }}' | Removing temporary sync privileges"
   ansible.builtin.file:
-    path: '/etc/sudoers.d/ansible_ansibleguy_infra_django_apache'
+    path: '/etc/sudoers.d/ansibledjango_apache2'
     state: absent
 
 - name: "Django | Site '{{ name }}' | Updating privileges for code"
